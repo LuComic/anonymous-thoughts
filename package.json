@@ -37,6 +37,8 @@
     "@types/bun": "latest"
   },
   "dependencies": {
-    "@fontsource-variable/merriweather": "^5.2.6"
+    "@fontsource-variable/merriweather": "^5.2.6",
+    "convex": "^1.36.1",
+    "convex-svelte": "^0.0.12"
   }
 }
