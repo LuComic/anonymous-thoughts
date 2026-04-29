@@ -1,0 +1,14 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/merriweather/wght.css';
+
+html,
+body {
+	background-color: black;
+	color: white;
+}
+
+body {
+	max-width: 600px;
+	margin: 20px auto;
+	padding: 0 8px;
+}
