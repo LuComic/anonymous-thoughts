@@ -8,20 +8,32 @@
 
 	const client = useConvexClient();
 	let userId = $state('');
+	let receivedThought = $state<string | null | undefined>(undefined);
 
 	const hasSentToday = useQuery(api.thoughts.hasSentToday, () =>
 		userId ? { user: userId } : 'skip'
 	);
 	const thought = useQuery(api.thoughts.getThought, () =>
-		userId && hasSentToday.data ? { user: userId } : 'skip'
+		userId && hasSentToday.data && receivedThought === undefined ? { user: userId } : 'skip'
 	);
 
 	$effect(() => {
 		if (!browser) return;
 
 		const id = getOrCreateAnonymousUserId();
-		userId = id;
-		client.mutation(api.thoughts.ensureUser, { user: id });
+		if (!userId) {
+			userId = id;
+			client.mutation(api.thoughts.ensureUser, { user: id });
+		}
+
+		if (!hasSentToday.data) {
+			receivedThought = undefined;
+			return;
+		}
+
+		if (!thought.data || receivedThought !== undefined) return;
+		receivedThought = thought.data.content;
+		client.mutation(api.thoughts.markThoughtReceived, { note: thought.data.id });
 	});
 </script>
 
@@ -31,7 +43,7 @@
 
 	<h1 class="title mt-10 text-xl lg:text-3xl">What someone else wrote</h1>
 	{#if hasSentToday.data}
-		<ThoughtReceiving thought={thought.data ?? null} />
+		<ThoughtReceiving thought={receivedThought ?? null} />
 	{:else}
 		<p>Emptiness...</p>
 	{/if}

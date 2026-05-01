@@ -49,12 +49,24 @@ export const getThought = query({
 		if (user?.last_sent !== dateStr) return null;
 
 		const notes = await ctx.db.query('notes').collect();
-		const otherNotes = notes.filter((note) => note.user_id !== args.user);
+		const otherNotes = notes.filter(
+			(note) => note.user_id !== args.user && note.received === false
+		);
 
 		if (otherNotes.length === 0) return null;
 
 		const note = otherNotes[Math.floor(Math.random() * otherNotes.length)];
-		return note.content;
+		return {
+			id: note._id,
+			content: note.content
+		};
+	}
+});
+
+export const markThoughtReceived = mutation({
+	args: { note: v.id('notes') },
+	handler: async (ctx, args) => {
+		await ctx.db.patch(args.note, { received: true });
 	}
 });
 
@@ -95,7 +107,8 @@ export const sendThought = mutation({
 		const note = await ctx.db.insert('notes', {
 			user_id: args.user,
 			content,
-			sent_at: dateStr
+			sent_at: dateStr,
+			received: false
 		});
 
 		if (user) {
