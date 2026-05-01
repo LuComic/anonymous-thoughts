@@ -4,12 +4,10 @@
 
 	let {
 		userId,
-		disabled,
-		onSent
+		disabled
 	}: {
 		userId: string;
 		disabled: boolean;
-		onSent: () => void;
 	} = $props();
 
 	const client = useConvexClient();
@@ -27,7 +25,6 @@
 				note: content
 			});
 			note = '';
-			onSent();
 		} finally {
 			sending = false;
 		}
@@ -38,7 +35,7 @@
 <button
 	disabled={disabled || sending || !note.trim()}
 	onclick={sendThought}
-	class="mr-auto w-auto rounded-md bg-white/90 px-2 py-0.5 font-medium text-black hover:bg-white/70 disabled:cursor-not-allowed disabled:bg-white/30"
+	class="mr-auto w-auto rounded-md bg-white/90 px-2 py-0.5 font-medium text-black hover:bg-white/70 disabled:cursor-not-allowed"
 	>Send</button
 >
 

@@ -79,6 +79,7 @@ export const sendThought = mutation({
 		if (user) {
 			await ctx.db.patch(user._id, { last_sent: dateStr });
 		} else {
+			// Just for safety and not necessary, since ensureUser already creates the user on load
 			await ctx.db.insert('users', {
 				id: args.user,
 				last_sent: dateStr

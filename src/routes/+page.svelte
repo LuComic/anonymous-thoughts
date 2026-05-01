@@ -23,19 +23,17 @@
 		userId = id;
 		client.mutation(api.thoughts.ensureUser, { user: id });
 	});
-
-	function handleSent() {
-		// The Convex queries update live after the mutation changes last_sent.
-	}
 </script>
 
 <div class="flex flex-col gap-4">
 	<h1 class="title text-xl lg:text-3xl">Write something and send it to the void</h1>
-	<ThoughtSending {userId} disabled={!userId || hasSentToday.data === true} onSent={handleSent} />
+	<ThoughtSending {userId} disabled={!userId || hasSentToday.data === true} />
 
 	<h1 class="title mt-10 text-xl lg:text-3xl">What someone else wrote</h1>
 	{#if hasSentToday.data}
 		<ThoughtReceiving thought={thought.data ?? null} />
+	{:else}
+		<p>Emptiness...</p>
 	{/if}
 </div>
 
