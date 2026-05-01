@@ -10,5 +10,9 @@ export default defineSchema({
 		user_id: v.string(),
 		content: v.string(),
 		sent_at: v.string()
-	})
+	}),
+	dailyCap: defineTable({
+		day: v.string(),
+		amount: v.number()
+	}).index('by_day', ['day'])
 });

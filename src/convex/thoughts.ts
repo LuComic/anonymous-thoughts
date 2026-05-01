@@ -2,6 +2,8 @@ import { query, mutation } from './_generated/server';
 import { v } from 'convex/values';
 
 const todayString = () => new Date().toISOString().slice(0, 10).replace(/-/g, '');
+const CHAR_LIMIT = 500;
+const NOTE_LIMIT = 100;
 
 export const ensureUser = mutation({
 	args: { user: v.string() },
@@ -67,12 +69,32 @@ export const sendThought = mutation({
 			.first();
 
 		const dateStr = todayString();
+		const content = args.note.trim();
 
-		if (user?.last_sent === dateStr) return null;
+		if (user?.last_sent === dateStr || content.length === 0 || content.length > CHAR_LIMIT)
+			return null;
+
+		const todaysLimit = await ctx.db
+			.query('dailyCap')
+			.withIndex('by_day', (u) => u.eq('day', dateStr))
+			.first();
+
+		if (todaysLimit && todaysLimit.amount >= NOTE_LIMIT) return null;
+
+		if (todaysLimit) {
+			await ctx.db.patch(todaysLimit._id, {
+				amount: todaysLimit.amount + 1
+			});
+		} else {
+			await ctx.db.insert('dailyCap', {
+				day: dateStr,
+				amount: 1
+			});
+		}
 
 		const note = await ctx.db.insert('notes', {
 			user_id: args.user,
-			content: args.note,
+			content,
 			sent_at: dateStr
 		});
 

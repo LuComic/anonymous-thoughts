@@ -13,9 +13,15 @@
 	const client = useConvexClient();
 	let note = $state('');
 	let sending = $state(false);
+	let limitError = $state(false);
+	let LIMIT = 500;
 
 	async function sendThought() {
 		const content = note.trim();
+		if (content.length > LIMIT) {
+			limitError = true;
+			return;
+		}
 		if (!content || disabled || sending) return;
 
 		sending = true;
@@ -38,6 +44,9 @@
 	class="mr-auto w-auto rounded-md bg-white/90 px-2 py-0.5 font-medium text-black hover:bg-white/70 disabled:cursor-not-allowed"
 	>Send</button
 >
+{#if limitError}
+	<p class="text-rose-500">Too long. Max 500 chars</p>
+{/if}
 
 <style>
 	textarea {
