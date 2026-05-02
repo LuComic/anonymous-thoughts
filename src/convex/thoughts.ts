@@ -50,7 +50,7 @@ export const getThought = query({
 
 		const notes = await ctx.db.query('notes').collect();
 		const otherNotes = notes.filter(
-			(note) => note.user_id !== args.user && note.received === false
+			(note) => note.user_id !== args.user && note.received !== true
 		);
 
 		if (otherNotes.length === 0) return null;

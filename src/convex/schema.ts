@@ -10,7 +10,7 @@ export default defineSchema({
 		user_id: v.string(),
 		content: v.string(),
 		sent_at: v.string(),
-		received: v.boolean()
+		received: v.optional(v.boolean())
 	}),
 	dailyCap: defineTable({
 		day: v.string(),

@@ -39,13 +39,14 @@
 
 <div class="flex flex-col gap-4">
 	<h1 class="title text-xl lg:text-3xl">Write something and send it to the void</h1>
+	<p>One note a day. Send one to see one</p>
 	<ThoughtSending {userId} disabled={!userId || hasSentToday.data === true} />
 
 	<h1 class="title mt-10 text-xl lg:text-3xl">What someone else wrote</h1>
 	{#if hasSentToday.data}
 		<ThoughtReceiving thought={receivedThought ?? null} />
 	{:else}
-		<p>Emptiness...</p>
+		<p>Send a note to see a note</p>
 	{/if}
 </div>
 
