@@ -11,7 +11,7 @@ export default defineSchema({
 		content: v.string(),
 		sent_at: v.string(),
 		received: v.optional(v.boolean())
-	}),
+	}).index('by_sent_at_and_received', ['sent_at', 'received']),
 	dailyCap: defineTable({
 		day: v.string(),
 		amount: v.number()

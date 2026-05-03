@@ -13,9 +13,10 @@
 	const hasSentToday = useQuery(api.thoughts.hasSentToday, () =>
 		userId ? { user: userId } : 'skip'
 	);
-	const thought = useQuery(api.thoughts.getThought, () =>
+	const hasAvailableThought = useQuery(api.thoughts.hasAvailableThought, () =>
 		userId && hasSentToday.data && receivedThought === undefined ? { user: userId } : 'skip'
 	);
+	let receivingThought = $state(false);
 
 	$effect(() => {
 		if (!browser) return;
@@ -28,12 +29,26 @@
 
 		if (!hasSentToday.data) {
 			receivedThought = undefined;
+			receivingThought = false;
 			return;
 		}
 
-		if (!thought.data || receivedThought !== undefined) return;
-		receivedThought = thought.data.content;
-		client.mutation(api.thoughts.markThoughtReceived, { note: thought.data.id });
+		if (receivedThought !== undefined || receivingThought || hasAvailableThought.data !== true)
+			return;
+
+		receivingThought = true;
+		client
+			.mutation(api.thoughts.getThought, { user: userId })
+			.then((thought) => {
+				receivedThought = thought?.content ?? null;
+			})
+			.catch((error) => {
+				console.error('Failed to receive thought', error);
+				receivedThought = null;
+			})
+			.finally(() => {
+				receivingThought = false;
+			});
 	});
 </script>
 
